@@ -38,64 +38,30 @@
           icon="Plus"
           @click="handleAdd"
           v-hasPermi="['dataControl:exercise:add']"
-        >新增</el-button>
+        >新增题目</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['dataControl:exercise:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['dataControl:exercise:remove']"
-        >删除</el-button>
-      </el-col>
-      <!-- <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['dataControl:exercise:export']"
-        >导出</el-button>
-      </el-col> -->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
+      <el-table-column type="index" label="序号" align="center" width="50" />
       <el-table-column label="题目描述" align="center" prop="exerciseTitle" />
-      <el-table-column label="选项A" align="center" prop="choiceA" />
-      <el-table-column label="选项B" align="center" prop="choiceB" />
-      <el-table-column label="选项C" align="center" prop="choiceC" />
-      <el-table-column label="选项D" align="center" prop="choiceD" />
-      <el-table-column label="正确答案，对于选择题只能取A、B、C、D这四个值其中之一，对于判断题只能是 正确/错误 二者之一" align="center" prop="correctAnswer" />
-      <el-table-column label="答案解析" align="center" prop="analysis" />
-      <el-table-column label="题目类型 0:选择题 1:判断题" align="center" prop="exerciseType">
+      <el-table-column label="题目类型" align="center" prop="exerciseType">
         <template #default="scope">
           <dict-tag :options="sys_exercise_type" :value="scope.row.exerciseType"/>
         </template>
       </el-table-column>
-      <el-table-column label="类型 0:基础题 1:阅读程序 2:补全程序" align="center" prop="quesType">
+      <el-table-column label="类型" align="center" prop="quesType">
         <template #default="scope">
           <dict-tag :options="sys_exercise_cate" :value="scope.row.quesType"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exercise:edit']">修改</el-button>
-               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:exercise:remove']">删除</el-button>
+              <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)">详情</el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exercise:edit']">修改</el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:exercise:remove']">删除</el-button>
             </template>
          </el-table-column>
     </el-table>
@@ -107,55 +73,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改题目对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="题目描述" prop="exerciseTitle">
-          <el-input v-model="form.exerciseTitle" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="选项A" prop="choiceA">
-          <el-input v-model="form.choiceA" placeholder="请输入选项A" />
-        </el-form-item>
-        <el-form-item label="选项B" prop="choiceB">
-          <el-input v-model="form.choiceB" placeholder="请输入选项B" />
-        </el-form-item>
-        <el-form-item label="选项C" prop="choiceC">
-          <el-input v-model="form.choiceC" placeholder="请输入选项C" />
-        </el-form-item>
-        <el-form-item label="选项D" prop="choiceD">
-          <el-input v-model="form.choiceD" placeholder="请输入选项D" />
-        </el-form-item>
-        <el-form-item label="正确答案，对于选择题只能取A、B、C、D这四个值其中之一，对于判断题只能是 正确/错误 二者之一" prop="correctAnswer">
-          <el-input v-model="form.correctAnswer" placeholder="请输入正确答案，对于选择题只能取A、B、C、D这四个值其中之一，对于判断题只能是 正确/错误 二者之一" />
-        </el-form-item>
-        <el-form-item label="答案解析" prop="analysis">
-          <el-input v-model="form.analysis" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="题目类型 0:选择题 1:判断题" prop="exerciseType">
-          <el-radio-group v-model="form.exerciseType">
-            <el-radio
-              v-for="dict in sys_exercise_type"
-              :key="dict.value"
-              :label="parseInt(dict.value)"
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="类型 0:基础题 1:阅读程序 2:补全程序" prop="quesType">
-          <el-radio-group v-model="form.quesType">
-            <el-radio
-              v-for="dict in sys_exercise_cate"
-              :key="dict.value"
-              :label="parseInt(dict.value)"
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -260,46 +177,25 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
+    /** 查看题目详情操作 */
+    handleInfo(row) {
+      this.reset();
+      this.$router.push('/dataControl/exercise-info/info/' + row.id)
+    },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.open = true;
-      this.title = "添加题目";
+      this.$router.push('/dataControl/exercise-add/add')
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getExercise(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改题目";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateExercise(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addExercise(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+      this.$router.push('/dataControl/exercise-edit/edit/' + row.id)
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除题目编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('删除后不可恢复，是否确认？').then(function() {
         return delExercise(ids);
       }).then(() => {
         this.getList();
