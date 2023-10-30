@@ -1,8 +1,8 @@
 <template>
     <div>
       <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-        <el-form-item label="题目描述" prop="exerciseTitle">
-          <el-input v-model="queryParams.exerciseTitle" placeholder="请输入题目描述" />
+        <el-form-item label="题目描述" prop="exerciseProgram">
+          <el-input v-model="queryParams.exerciseProgram" placeholder="请输入题目描述" />
         </el-form-item>
         <el-form-item label="题目类型" prop="quesType">
             <el-select v-model="queryParams.quesType" placeholder="请选择类型" clearable>
@@ -44,14 +44,36 @@
               </template>
            </el-table-column>
       </el-table>
-      
+
       <pagination
-        v-show="total>0"
+        v-show="total > 0"
         :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
+
+      <el-dialog title="请首先录入题干程序" v-model="open" width="1000px" append-to-body>
+        <el-form ref='form' :model="form" label-width="20px" :rules="rules">
+          <el-form-item label="" prop="quesType">
+            <el-radio-group v-model="form.quesType" class="ml-4" style="margin-bottom:0px">
+                <el-radio label="1" size="large">阅读程序题</el-radio>
+                <el-radio label="2" size="large">补全程序题</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="" prop="exerciseProgram">
+           <Editor :key="open" v-model="form.exerciseProgram" :height="400"/>
+          </el-form-item>
+          <div slot="footer" class="dialog-footer" style="margin-top:10px">
+            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button @click="cancel">取 消</el-button>
+          </div>
+        </el-form>
+      </el-dialog>
+
+      <el-dialog title="编辑题目" v-model="openEdit" width="1000px" append-to-body>
+        <BaseExercise/>
+      </el-dialog>
     </div>
   </template>
   
@@ -62,11 +84,14 @@
   
   <script>
   import { listExercise, getExercise, delExercise, addExercise, updateExercise } from "@/api/dataControl/exercise";
+  import BaseExercise from './BaseExercise.vue';
   
   export default {
     name: "ProgramExercise",
     data() {
       return {
+        open:false,
+        openEdit:false,
         // 遮罩层
         loading: true,
         // 选中数组
@@ -85,9 +110,20 @@
         queryParams: {
           pageNum: 1,
           pageSize: 10,
-          exerciseTitle: null,
+          exerciseProgram: null,
           quesType: null
         },
+        // 表单参数
+        form: {},
+        // 表单校验
+        rules: {
+          exerciseProgram: [
+              { required: true, message: "题目描述不能为空", trigger: "blur" }
+          ],
+          quesType: [
+              { required: true, message: "请选择题型", trigger: "blur" }
+          ],
+        }
       };
     },
     created() {
@@ -102,6 +138,40 @@
           this.total = response.total;
           this.loading = false;
         });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      submitForm() {
+        this.$refs["form"].validate(valid => {
+          if (valid) {
+            if (this.form.id != null || this.form.id === -1) {
+              updateExercise(this.form).then(response => {
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              addExercise(this.form).then(response => {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          exerciseProgram: '',
+          exerciseType: -1,
+          quesType: '1',
+        };
+        this.resetForm("form");
       },
       /** 搜索按钮操作 */
       handleQuery() {
@@ -121,11 +191,14 @@
       },
       /** 查看题目详情操作 */
       handleInfo(row) {
-        this.$router.push('/dataControl/exercise-info/info/' + row.id)
+        this.openEdit=true;
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.$router.push('/dataControl/exercise-add/add')
+        this.reset();
+        this.open = true;
+
+        // this.$router.push('/dataControl/exercise-add/add')
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
@@ -144,5 +217,10 @@
       
     }
   };
-  </script>
+</script>
   
+<style scope>
+.el-dialog__body {
+   padding-top:1px;
+}
+</style>

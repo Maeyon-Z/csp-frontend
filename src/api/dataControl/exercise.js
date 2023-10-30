@@ -42,3 +42,11 @@ export function delExercise(id) {
     method: 'delete'
   })
 }
+
+// 获取子题
+export function getQues(parentId) {
+  return request({
+    url: '/dataControl/exercise/ques/' + parentId,
+    method: 'get'
+  })
+}

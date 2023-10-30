@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="题目描述" prop="exerciseTitle">
         <el-input v-model="queryParams.exerciseTitle" placeholder="请输入题目描述" />
       </el-form-item>
@@ -36,18 +36,18 @@
     </el-table>
     
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
       @pagination="getList"
     />
 
     <!-- 添加或修改试卷管理对话框 -->
     <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref='form' :model="form" :rules="rules" label-width="80px">
         <el-form-item label="题目描述" prop="exerciseTitle">
-          <Editor v-model=form.exerciseTitle :height="400" />
+          <Editor :key="open" v-model=form.exerciseTitle :height="400" />
         </el-form-item>
         <el-row :span="24">
           <el-col :span="12">
@@ -92,7 +92,7 @@
     </el-dialog>
 
     <el-dialog title="题目详情" v-model="showInfo" width="1000px" append-to-body>
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form :model="form" label-width="80px">
         <div class="ql-container ql-snow">
           <div class="ql-editor">
             <div v-html="form.exerciseTitle"></div>
@@ -230,7 +230,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.id != null) {
+          if (this.form.id != null || this.form.id === -1) {
             updateExercise(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -256,11 +256,13 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.title="新增题目";
       this.open = true;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.title="编辑题目";
       this.form = row;
       this.open = true;
     },

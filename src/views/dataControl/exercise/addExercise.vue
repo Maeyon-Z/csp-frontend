@@ -16,45 +16,78 @@
          
       </div>
    
-      <el-dialog title="录入题干" v-model="openProgram" width="1000px" append-to-body>
+      <el-dialog :title=buttonName v-model="openProgram" width="1000px" append-to-body>
          <el-radio-group v-model="quesType" class="ml-4" style="margin-bottom:10px">
             <el-radio label="1" size="large">阅读程序题</el-radio>
             <el-radio label="2" size="large">补全程序题</el-radio>
          </el-radio-group>
-         <Editor v-model="exerciseProgram" :height="400"/>
+         <Editor :key="openProgram" v-model="exerciseProgram" :height="400"/>
          <div slot="footer" class="dialog-footer" style="margin-top:10px">
             <el-button type="primary" @click="saveProgram">确 定</el-button>
-            <el-button @click="cancel">取 消</el-button>
+            <el-button @click="cancel(quesFormRef)">取 消</el-button>
          </div>
       </el-dialog>
 
       <el-dialog title="录入问题" v-model="openQues" width="1000px" append-to-body>
-         <el-form ref="form" :model="form" label-width="80px">
+         <el-form :model="form" label-width="80px" :rules="rules" ref="quesFormRef">
             <el-form-item label="题目" prop="exerciseTitle">
-               <Editor v-model=form.exerciseTitle :height="200" />
+               <Editor :key="openQues" v-model=form.exerciseTitle :height="200" />
             </el-form-item>
-            <el-form-item label="类型" prop="quesType1">
-               <el-radio-group v-model="form.quesType1" class="ml-4" >
-                  <el-radio label="1" size="large">选择题</el-radio>
-                  <el-radio label="2" size="large">判断题</el-radio>
+            <el-form-item label="类型" prop="quesType">
+               <el-radio-group v-model="form.quesType" class="ml-4" >
+                  <el-radio label=1 size="large">选择题</el-radio>
+                  <el-radio label=2 size="large">判断题</el-radio>
                </el-radio-group>
             </el-form-item>
+            <div v-if="form.quesType==='1'">
+               <el-row :span="24">
+                  <el-col :span="12">
+                     <el-form-item label="选项A" prop="choiceA">
+                     <el-input v-model="form.choiceA" placeholder="请输入选项A" />
+                     </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                     <el-form-item label="选项B" prop="choiceB">
+                     <el-input v-model="form.choiceB" placeholder="请输入选项B" />
+                     </el-form-item>
+                  </el-col>
+               </el-row>
+               <el-row :span="24">
+                  <el-col :span="12">
+                     <el-form-item label="选项C" prop="choiceC">
+                     <el-input v-model="form.choiceC" placeholder="请输入选项C" />
+                     </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                     <el-form-item label="选项D" prop="choiceD">
+                     <el-input v-model="form.choiceD" placeholder="请输入选项D" />
+                     </el-form-item>
+                  </el-col>
+               </el-row>
+               <el-form-item label="答案" prop="correctAnswer">
+                  <el-radio-group v-model="form.correctAnswer" class="ml-4">
+                     <el-radio label="A" size="large">选项A</el-radio>
+                     <el-radio label="B" size="large">选项B</el-radio>
+                     <el-radio label="C" size="large">选项C</el-radio>
+                     <el-radio label="D" size="large">选项D</el-radio>
+                  </el-radio-group>
+               </el-form-item>
+            </div>
+            <div v-if="form.quesType==='2'">
+               <el-form-item label="答案" prop="correctAnswer">
+                  <el-radio-group v-model="form.correctAnswer" class="ml-4">
+                     <el-radio label="正确" size="large">正确</el-radio>
+                     <el-radio label="错误" size="large">错误</el-radio>
+                  </el-radio-group>
+               </el-form-item>
+            </div>
+            <el-form-item label="答案解析" prop="analysis">
+               <el-input v-model="form.analysis" placeholder="请输入答案解析" type="textarea" />
+            </el-form-item>
          </el-form>
-
-         <!-- <div style="font-size:15px; font-weight:bold; margin-bottom:10px"> {{ "请输入题目:" }} </div>
-         <Editor v-model="exerciseTitle" :height="200"/>
-         
-         <el-row style="font-size:15px; font-weight:bold; margin-top:2px"> 
-            <div style="font-size:15px; font-weight:bold; margin-top:8px">{{ "请选择题目类型:" }}</div>
-            <el-radio-group v-model="quesType" class="ml-4" style="margin-left:20px">
-               <el-radio label="1" size="large">选择题</el-radio>
-               <el-radio label="2" size="large">判断题</el-radio>
-            </el-radio-group>
-         </el-row> -->
-         
          <div slot="footer" class="dialog-footer" style="margin-top:10px">
-            <el-button type="primary" @click="saveQues">确 定</el-button>
-            <el-button @click="cancel">取 消</el-button>
+            <el-button type="primary" @click="saveQues(quesFormRef)">确 定</el-button>
+            <el-button @click="cancel(quesFormRef)">取 消</el-button>
          </div>
       </el-dialog>
    </div>
@@ -62,12 +95,27 @@
 </template>
  
 <script setup lang=ts name="ExerciseAdd">
-import { addExercise, updateExercise } from "@/api/dataControl/exercise";
+import { addExercise, updateExercise, getQues } from "@/api/dataControl/exercise";
 import { reactive, ref } from 'vue'
+import type { FormInstance, FormRules } from 'element-plus'
 
-// 添加题目的请求参数
-const form = reactive({
-   id: '',
+// 变量
+interface QuesForm {
+   exerciseTitle: string
+   choiceA: string
+   choiceB: string
+   choiceC: string
+   choiceD: string
+   correctAnswer: boolean
+   analysis: string
+   exerciseType: long
+   quesType: long
+   id: long,
+   parentId:long
+}
+const form = reactive<QuesForm>({
+   id: -1,
+   parentId:-1,
    exerciseTitle: '',
    choiceA: '',
    choiceB: '',
@@ -75,14 +123,13 @@ const form = reactive({
    choiceD: '',
    correctAnswer: '',
    analysis: '',
-   exerciseType: '',
-   quesType1: '',
+   exerciseType: -1,
+   quesType: -1,
 });
-const id = ref('-1');
+const quesFormRef = ref<FormInstance>()
+const id = ref(-1);
 const quesType = ref('1');
-const exerciseType = ref('-1');
 const exerciseProgram = ref("");
-const exerciseTitle = ref("");
 
 // 控制标志
 const showOther = ref(false);
@@ -93,6 +140,8 @@ const openQues = ref(false);
 const buttonName = ref('录入题干程序')
 
 const handleAddProgram = () => {
+   exerciseProgram.value = showOther.value ? exerciseProgram.value : "";
+   quesType.value = '1';
    openProgram.value = true;
 }
 
@@ -122,32 +171,70 @@ const saveProgram = () => {
    }
 }
 
-const saveQues = (quesId) => {
-   if(quesId == -1){
-      addExercise({quesType:quesType.value, exerciseProgram:exerciseProgram.value}).then(response => {
-         if(response.code == 200){
-            id.value = response.data;
-            buttonName.value = '编辑题干程序';
-            showOther.value = true;
-            openProgram.value = false;
+const saveQues = async (formEl: FormInstance | undefined) => {
+   if (!formEl) return
+   await formEl.validate((valid, fields) => {
+      if (valid) {
+         form.parentId = id.value;
+         form.quesType = quesType.value;
+         if(form.id != -1){
+            updateExercise(form).then(response => {
+               if(response.code == 200){
+                  showOther.value = true;
+                  openQues.value = false;
+               }
+            });
+         }else{
+            addExercise(form).then(response => {
+               if(response.code == 200){
+                  id.value = response.data;
+                  buttonName.value = '编辑题干程序';
+                  showOther.value = true;
+                  openQues.value = false;
+               }
+            });
          }
-      });
-   }else{
-      updateExercise({id:quesId, quesType:quesType.value, exerciseProgram:exerciseProgram.value}).then(response => {
-         if(response.code == 200){
-            buttonName.value = '编辑题干程序';
-            showOther.value = true;
-            openProgram.value = false;
-         }
-      });
-   }
+         resetForm(formEl);
+      }
+   })
 }
 
-const cancel = () => {
+const cancel = (formEl: FormInstance | undefined) => {
+   resetForm(formEl)
    openProgram.value = false;
    openQues.value = false;
 }
 
+const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.resetFields()
+}
+
+// 校验规则
+const rules = reactive<FormRules<QuesForm>>({
+   exerciseTitle: [
+    { required: true, message: '题目描述不能为空', trigger: 'blur' },
+   ],
+   quesType: [
+    { required: true, message: '请选择类型', trigger: 'blur' },
+   ],
+   choiceA: [
+    { required: true, message: '选项A不能为空', trigger: 'blur' },
+   ],
+   choiceB: [
+    { required: true, message: '选项B不能为空', trigger: 'blur' },
+   ],
+   choiceC: [
+    { required: true, message: '选项C不能为空', trigger: 'blur' },
+   ],
+   choiceD: [
+    { required: true, message: '选项D不能为空', trigger: 'blur' },
+   ],
+   correctAnswer: [
+    { required: true, message: '请选择正确答案', trigger: 'blur' },
+   ],
+  
+})
 </script>
  
 <style scope>

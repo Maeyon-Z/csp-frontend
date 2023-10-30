@@ -6,14 +6,9 @@
 </template>
   
 <script lang="ts" setup name="Exercise">
-import type { TabsPaneContext } from 'element-plus';
 import BaseExercise from './BaseExercise.vue';
 import ProgramExercise from './ProgramExercise.vue';
-
-const app = createApp({});
-app.component({
-    BaseExercise,ProgramExercise
-});
+import { ref } from 'vue'
 
 
 const activeName = ref('base');
