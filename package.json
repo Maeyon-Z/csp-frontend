@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "tongchen",
   "version": "3.8.6",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "童辰科技在线刷题系统",
+  "author": "ZZZ",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -25,6 +25,7 @@
     "fuse.js": "6.6.2",
     "js-cookie": "3.0.1",
     "jsencrypt": "3.3.1",
+    "mavon-editor": "^3.0.1",
     "nprogress": "0.2.0",
     "pinia": "2.0.22",
     "vue": "3.2.45",
@@ -36,9 +37,9 @@
     "@vue/compiler-sfc": "3.2.45",
     "sass": "1.56.1",
     "unplugin-auto-import": "0.11.4",
+    "unplugin-vue-setup-extend-plus": "0.4.9",
     "vite": "3.2.3",
     "vite-plugin-compression": "0.5.1",
-    "vite-plugin-svg-icons": "2.0.1",
-    "unplugin-vue-setup-extend-plus": "0.4.9"
+    "vite-plugin-svg-icons": "2.0.1"
   }
 }

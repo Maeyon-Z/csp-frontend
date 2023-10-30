@@ -1,10 +1,16 @@
 <template>
-    <div>
+    <div style="margin-left:100px; margin-right:100px">
        新增题目
+       <Editor @update:modelValue="editorChange"/>
     </div>
- </template>
+</template>
  
- <script setup name="ExerciseAdd">
+<script setup name="ExerciseAdd">
 
- </script>
+const editorChange = (content) => {
+   console.log(12321321);
+   console.log(content);
+}
+
+</script>
  

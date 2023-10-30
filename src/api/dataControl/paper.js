@@ -20,7 +20,7 @@ export function getPaper(id) {
 // 新增试卷管理
 export function addPaper(data) {
   return request({
-    url: '/dataControl/paper',
+    url: '/dataControl/paper/add',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addPaper(data) {
 // 修改试卷管理
 export function updatePaper(data) {
   return request({
-    url: '/dataControl/paper',
+    url: '/dataControl/paper/edit',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updatePaper(data) {
 // 删除试卷管理
 export function delPaper(id) {
   return request({
-    url: '/dataControl/paper/' + id,
+    url: '/dataControl/paper/del/' + id,
     method: 'delete'
   })
 }
