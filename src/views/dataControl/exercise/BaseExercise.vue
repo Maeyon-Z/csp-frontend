@@ -199,7 +199,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        exerciseTitle: null,
+        exerciseTitle: '',
         choiceA: null,
         choiceB: null,
         choiceC: null,

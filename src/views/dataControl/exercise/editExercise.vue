@@ -1,6 +1,6 @@
 <template>
     <div >
-       编辑题目
+       编辑程序题
     </div>
  </template>
  

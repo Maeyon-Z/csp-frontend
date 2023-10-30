@@ -30,16 +30,7 @@
       <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column type="index" label="序号" align="center" width="50" />
-        <el-table-column label="题目描述" align="center" prop="exerciseTitle" />
-        <el-table-column label="选项A" align="center" prop="choiceA" />
-        <el-table-column label="选项B" align="center" prop="choiceB" />
-        <el-table-column label="选项C" align="center" prop="choiceC" />
-        <el-table-column label="选项D" align="center" prop="choiceD" />
-        <el-table-column label="题目类型" align="center" prop="exerciseType">
-          <template #default="scope">
-            <dict-tag :options="sys_exercise_type" :value="scope.row.exerciseType"/>
-          </template>
-        </el-table-column>
+        <el-table-column label="题干程序" align="center" prop="exerciseProgram" />
         <el-table-column label="类型" align="center" prop="quesType">
           <template #default="scope">
             <dict-tag :options="sys_exercise_cate" :value="scope.row.quesType"/>
@@ -66,7 +57,7 @@
   
   <script setup name="ProgramExercise">
   const { proxy } = getCurrentInstance();
-  const { sys_exercise_cate, sys_exercise_type } = proxy.useDict("sys_exercise_cate", "sys_exercise_type");
+  const { sys_exercise_cate } = proxy.useDict("sys_exercise_cate");
   </script>
   
   <script>
@@ -90,23 +81,13 @@
         total: 0,
         // 题目表格数据
         exerciseList: [],
-        // 弹出层标题
-        title: "",
-        // 是否显示弹出层
-        open: false,
         // 查询参数
         queryParams: {
           pageNum: 1,
           pageSize: 10,
           exerciseTitle: null,
-          exerciseType: null,
-          quesType: null,
+          quesType: null
         },
-        // 表单参数
-        form: {},
-        // 表单校验
-        rules: {
-        }
       };
     },
     created() {
@@ -121,32 +102,6 @@
           this.total = response.total;
           this.loading = false;
         });
-      },
-      // 取消按钮
-      cancel() {
-        this.open = false;
-        this.reset();
-      },
-      // 表单重置
-      reset() {
-        this.form = {
-          id: null,
-          exerciseTitle: null,
-          choiceA: null,
-          choiceB: null,
-          choiceC: null,
-          choiceD: null,
-          correctAnswer: null,
-          analysis: null,
-          exerciseType: null,
-          quesType: null,
-          isDelete: null,
-          createBy: null,
-          createTime: null,
-          updateBy: null,
-          updateTime: null
-        };
-        this.resetForm("form");
       },
       /** 搜索按钮操作 */
       handleQuery() {
@@ -166,17 +121,14 @@
       },
       /** 查看题目详情操作 */
       handleInfo(row) {
-        this.reset();
         this.$router.push('/dataControl/exercise-info/info/' + row.id)
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
         this.$router.push('/dataControl/exercise-add/add')
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
         this.$router.push('/dataControl/exercise-edit/edit/' + row.id)
       },
       /** 删除按钮操作 */
@@ -189,12 +141,7 @@
           this.$modal.msgSuccess("删除成功");
         }).catch(() => {});
       },
-      /** 导出按钮操作 */
-      handleExport() {
-        this.download('dataControl/exercise/export', {
-          ...this.queryParams
-        }, `exercise_${new Date().getTime()}.xlsx`)
-      }
+      
     }
   };
   </script>
