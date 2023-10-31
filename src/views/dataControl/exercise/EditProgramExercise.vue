@@ -12,9 +12,10 @@
     </el-col>
    </el-row>
    <el-form-item label="题干程序" prop="exerciseProgram"> 
-    <div class="ql-container ql-snow" style="padding-left:10px; padding-right:10px;">
+    <!-- <div class="ql-container ql-snow" style="padding-left:10px; padding-right:10px;">
         <div v-html="exerciseForm.exerciseProgram"></div>
-    </div>
+    </div> -->
+    <Editor :key="openProgram" v-model="exerciseForm.exerciseProgram" :readOnly="true" :height="400"/>
    </el-form-item>
   </el-form>
 

@@ -93,11 +93,12 @@
 
     <el-dialog title="题目详情" v-model="showInfo" width="1000px" append-to-body>
       <el-form :model="form" label-width="80px">
-        <div class="ql-container ql-snow">
+        <!-- <div class="ql-container ql-snow">
           <div class="ql-editor">
             <div v-html="form.exerciseTitle"></div>
           </div>
-        </div>
+        </div> -->
+        <Editor v-model="form.exerciseTitle" :readOnly="true" :height="300"/>
         <el-row :span="24" style="margin-top:20px; margin-bottom:20px">
             <el-col :span="6"> {{ "A、" + form.choiceA }} </el-col>
             <el-col :span="6"> {{ "B、" + form.choiceB }} </el-col>
