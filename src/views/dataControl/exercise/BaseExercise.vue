@@ -98,16 +98,17 @@
             <div v-html="form.exerciseTitle"></div>
           </div>
         </div>
-        <div style="height:10px"></div>
-        <el-radio-group :disabled="true" v-model="form.correctAnswer" class="ml-4">
-          <el-radio label="A" size="large"> A、{{ form.choiceA }}</el-radio>
-          <el-radio label="B" size="large"> B、{{ form.choiceB }}</el-radio>
-          <el-radio label="C" size="large"> C、{{ form.choiceC }}</el-radio>
-          <el-radio label="D" size="large"> D、{{ form.choiceD }}</el-radio>
-        </el-radio-group>
+        <el-row :span="24" style="margin-top:20px; margin-bottom:20px">
+            <el-col :span="6"> {{ "A、" + form.choiceA }} </el-col>
+            <el-col :span="6"> {{ "B、" + form.choiceB }} </el-col>
+            <el-col :span="6"> {{ "C、" + form.choiceC }} </el-col>
+            <el-col :span="6"> {{ "D、" + form.choiceD }} </el-col>
+        </el-row>
         <div style="margin-top:10px">
-          <div style="font-size:15px; font-weight:bold" >解析：</div>
-          {{ form.analysis }}
+          <div style="font-size:15px; font-weight:bold" >答案：{{ form.correctAnswer }}</div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:15px; font-weight:bold" >解析：{{ form.analysis }}</div>
         </div>
       </el-form>
     </el-dialog>

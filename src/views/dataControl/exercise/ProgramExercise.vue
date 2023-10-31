@@ -39,7 +39,7 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)">详情</el-button>
-                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exercise:edit']">修改</el-button>
+                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exercise:edit']">编辑</el-button>
                 <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:exercise:remove']">删除</el-button>
               </template>
            </el-table-column>
@@ -72,10 +72,10 @@
       </el-dialog>
 
       <el-dialog title="编辑题目" v-model="openEdit" width="1020px" append-to-body>
-        <EditProgramExercise :key="exerciseId" :exerciseId="exerciseId" edit="false"/>
+        <EditProgramExercise @refresh="reload" :key="exerciseId" :exerciseId="exerciseId" :edit="true"/>
       </el-dialog>
       <el-dialog title="题目详情" v-model="openInfo" width="1020px" append-to-body>
-        <EditProgramExercise :key="exerciseId" :exerciseId="exerciseId" edit="true"/>
+        <EditProgramExercise :key="openInfo" :exerciseId="exerciseId" :edit="false"/>
       </el-dialog>
     </div>
   </template>
@@ -143,6 +143,12 @@
           this.total = response.total;
           this.loading = false;
         });
+      },
+      reload(id){
+        this.getList();
+        // this.openEdit = false;
+        // this.exerciseId = id;
+        // this.openEdit = true;
       },
       // 取消按钮
       cancel() {

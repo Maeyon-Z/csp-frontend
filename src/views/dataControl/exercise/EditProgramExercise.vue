@@ -1,21 +1,20 @@
 <template>
  <div style="margin:10px; ">
   <el-form :model="exerciseForm" label-width="80px" ref="exerciseFormRef">
-   <el-row :span="24">
-    <el-col :span="20">
-        <el-form-item label="题目类型" prop="quesType">
-            <el-radio-group v-model="exerciseForm.quesType" class="ml-4" >
-            <el-radio label="1" size="large">阅读程序题</el-radio>
-            <el-radio label="2" size="large">补全程序题</el-radio>
-            </el-radio-group>
-        </el-form-item>
+   <el-row :span="24" style="margin-bottom:10px">
+    <el-col :span="18">
+        <div v-if="exerciseForm.quesType==1"> <span style="font-weight:bold; font-size:20px"> {{ "阅读程序题" }} </span> </div>
+        <div v-else> <span style="font-weight:bold; font-size:20px"> {{ "补全程序题" }} </span> </div>
     </el-col>
-    <el-col :span="4">
+    <el-col v-show="props.edit" :span="6">
+        <el-button type="primary" icon="Edit" @click="editProgram()" v-hasPermi="['dataControl:exercise:edit']">修改题干</el-button>
         <el-button type="primary" icon="Plus" @click="addQues()" v-hasPermi="['dataControl:exercise:add']">新增问题</el-button>
     </el-col>
    </el-row>
    <el-form-item label="题干程序" prop="exerciseProgram"> 
-    <Editor v-model="exerciseForm.exerciseProgram" :height="400"/>
+    <div class="ql-container ql-snow" style="padding-left:10px; padding-right:10px;">
+        <div v-html="exerciseForm.exerciseProgram"></div>
+    </div>
    </el-form-item>
   </el-form>
 
@@ -41,7 +40,7 @@
             <div style="margin-top:10px"> 
                 <span> {{ "解析：" + ques.analysis }} </span> 
             </div>
-            <div style="float:right; margin-right:10px; margin-bottom:10px"> 
+            <div v-show="props.edit" style="float:right; margin-right:10px; margin-bottom:10px"> 
                 <el-button type="primary" icon="Edit" @click="updateQues(ques)" v-hasPermi="['dataControl:exercise:edit']">修改</el-button>
                 <el-button type="primary" icon="Delete" @click="deleteQues(ques)" v-hasPermi="['dataControl:exercise:remove']">删除</el-button>
             </div>
@@ -108,20 +107,38 @@
     </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer" style="margin-top:10px">
-     <el-button type="primary" @click="saveQues()">确 定</el-button>
-     <el-button @click="cancel()">取 消</el-button>
+     <el-button type="primary" @click="saveQues">确 定</el-button>
+     <el-button @click="cancel">取 消</el-button>
     </div>
   </el-dialog>
+
+  <el-dialog title="修改题干" v-model="openProgram" width="940px" append-to-body>
+    <el-form ref='exerciseFormRef' :model="exerciseForm1" label-width="20px">
+        <el-form-item label="" prop="quesType">
+        <el-radio-group v-model="exerciseForm1.quesType" class="ml-4" style="margin-bottom:0px">
+            <el-radio label="1" size="large">阅读程序题</el-radio>
+            <el-radio label="2" size="large">补全程序题</el-radio>
+        </el-radio-group>
+        </el-form-item>
+        <el-form-item label="" prop="exerciseProgram">
+        <Editor :key="openProgram" v-model="exerciseForm1.exerciseProgram" :height="400"/>
+        </el-form-item>
+        <div slot="footer" class="dialog-footer" style="margin-top:10px">
+        <el-button type="primary" @click="saveProgram">确 定</el-button>
+        <el-button @click="cancelProgram">取 消</el-button>
+        </div>
+    </el-form>
+   </el-dialog>
  </div>
  
 </template>
   
 <script setup lang=ts name="EditProgramExercise">
- import { getExercise, getQues, delExercise } from "@/api/dataControl/exercise";
+ import { getExercise, getQues, delExercise, addExercise, updateExercise } from "@/api/dataControl/exercise";
  import { ElMessage, ElMessageBox } from 'element-plus'
  const { proxy } = getCurrentInstance();
  const props = defineProps(['exerciseId', 'edit'])
-
+ const emit = defineEmits(['refresh'])
  const quesData = reactive({
   quesForm: {},
   quesRules: {
@@ -164,9 +181,24 @@
    exerciseType: '-1',
    quesType: '-1',
  });
+ const exerciseForm1 = reactive<FormInterface>({
+   id: -1,
+   parentId:-1,
+   exerciseTitle: '',
+   exerciseProgram: '',
+   choiceA: '',
+   choiceB: '',
+   choiceC: '',
+   choiceD: '',
+   correctAnswer: '',
+   analysis: '',
+   exerciseType: '-1',
+   quesType: '-1',
+ });
  const quesList = ref([]);
  const loading = ref(false);
  const open = ref(false);
+ const openProgram = ref(false);
  const title = ref('');
 
  onMounted(() => {
@@ -186,6 +218,7 @@
  }
 
  const getExerciseQues = (parentId) => {
+    quesList.value = [];
     getQues(parentId).then(res => {
         if(res.code === 200){
             Object.assign(quesList.value, res.data);
@@ -207,6 +240,25 @@
     open.value=true;
  }
 
+ const editProgram = () => {
+    Object.assign(exerciseForm1, exerciseForm);
+    openProgram.value=true;
+ }
+
+ const saveProgram = () => {
+    updateExercise(exerciseForm1).then(response => {
+        if(response.code == 200){
+            ElMessage({
+            type: 'success',
+            message: '编辑成功',
+            })
+            Object.assign(exerciseForm, exerciseForm1);
+            openProgram.value = false;
+            refresh(props.exerciseId);
+        }
+    });
+ }
+
  const deleteQues = (ques) => {
   ElMessageBox.confirm(
     '删除后不可恢复，是否确定删除?',
@@ -217,7 +269,6 @@
       type: 'warning',
     }
   ).then(() => {
-      loading.value = true;
       delExercise(ques.id).then(res =>{
         if(res.code===200){
             ElMessage({
@@ -228,11 +279,10 @@
         }else{
             ElMessage({
                 type: 'fail',
-                message: '删除是被',
+                message: '删除失败',
             })
         }
       })
-      loading.value = false;
     })
     .catch(() => {
       ElMessage({
@@ -242,33 +292,35 @@
     })
  }
 
- const saveQues = async (formEl: FormInstance | undefined) => {
-   if (!formEl) return
-   await formEl.validate((valid, fields) => {
+ const saveQues = () => {
+    proxy.$refs["quesFormRef"].validate(valid => {
       if (valid) {
-         form.parentId = props.exerciseId;
-         if(form.id != -1){
-            updateExercise(form).then(response => {
+        quesForm.value.parentId = props.exerciseId;
+         if(quesForm.value.id != -1){
+            updateExercise(quesForm.value).then(response => {
                if(response.code == 200){
                   ElMessage({
                    type: 'success',
                    message: '编辑成功',
                   })
                   open.value = false;
+                  getExerciseQues(props.exerciseId);
+                  refresh(props.exerciseId);
                }
             });
          }else{
-            addExercise(form).then(response => {
+            addExercise(quesForm.value).then(response => {
                if(response.code == 200){
                   ElMessage({
                    type: 'success',
                    message: '新增成功',
                   })
                   open.value = false;
+                  getExerciseQues(props.exerciseId);
+                  refresh(props.exerciseId);
                }
             });
          }
-         resetForm(formEl);
       }
    })
  }
@@ -276,6 +328,14 @@
  const cancel = () => {
    reset();
    open.value = false;
+ }
+
+ const cancelProgram = () => {
+   openProgram.value = false;
+ }
+
+ function refresh(id) {
+    emit('refresh', id);
  }
 
  function reset() {
