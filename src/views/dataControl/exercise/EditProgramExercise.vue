@@ -3,8 +3,8 @@
   <el-form :model="exerciseForm" label-width="80px" ref="exerciseFormRef">
    <el-row :span="24" style="margin-bottom:10px">
     <el-col :span="18">
-        <div v-if="exerciseForm.quesType==1"> <span style="font-weight:bold; font-size:20px"> {{ "阅读程序题" }} </span> </div>
-        <div v-else> <span style="font-weight:bold; font-size:20px"> {{ "补全程序题" }} </span> </div>
+        <div v-if="exerciseForm.quesType==1"> <span style="font-weight:bold; font-size:20px"> {{ "阅读程序题-" + exerciseForm.remark }} </span> </div>
+        <div v-else> <span style="font-weight:bold; font-size:20px"> {{ "补全程序题-" + exerciseForm.remark  }} </span> </div>
     </el-col>
     <el-col v-show="props.edit" :span="6">
         <el-button type="primary" icon="Edit" @click="editProgram()" v-hasPermi="['dataControl:exercise:edit']">修改题干</el-button>
@@ -114,15 +114,18 @@
   </el-dialog>
 
   <el-dialog title="修改题干" v-model="openProgram" width="940px" append-to-body>
-    <el-form ref='exerciseFormRef' :model="exerciseForm1" label-width="20px">
-        <el-form-item label="" prop="quesType">
+    <el-form ref='exerciseFormRef' :model="exerciseForm1" label-width="40px">
+        <el-form-item label="题型" prop="quesType">
         <el-radio-group v-model="exerciseForm1.quesType" class="ml-4" style="margin-bottom:0px">
             <el-radio label="1" size="large">阅读程序题</el-radio>
             <el-radio label="2" size="large">补全程序题</el-radio>
         </el-radio-group>
         </el-form-item>
-        <el-form-item label="" prop="exerciseProgram">
+        <el-form-item label="程序" prop="exerciseProgram">
         <Editor :key="openProgram" v-model="exerciseForm1.exerciseProgram" :height="400"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+        <el-input v-model="exerciseForm1.remark" placeholder="请输入备注" />
         </el-form-item>
         <div slot="footer" class="dialog-footer" style="margin-top:10px">
         <el-button type="primary" @click="saveProgram">确 定</el-button>
@@ -167,6 +170,7 @@
    analysis: string
    exerciseType: string
    quesType: string
+   remark: string
  }
  const exerciseForm = reactive<FormInterface>({
    id: -1,
@@ -181,6 +185,7 @@
    analysis: '',
    exerciseType: '-1',
    quesType: '-1',
+   remark: '',
  });
  const exerciseForm1 = reactive<FormInterface>({
    id: -1,
@@ -195,6 +200,7 @@
    analysis: '',
    exerciseType: '-1',
    quesType: '-1',
+   remark: '',
  });
  const quesList = ref([]);
  const loading = ref(false);

@@ -14,6 +14,9 @@
             />
             </el-select>
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="queryParams.remark" placeholder="请输入备注" />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
           <el-button
@@ -36,6 +39,8 @@
             <dict-tag :options="sys_exercise_cate" :value="scope.row.quesType"/>
           </template>
         </el-table-column>
+
+        <el-table-column label="备注" align="center" prop="remark" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)">详情</el-button>
@@ -54,15 +59,18 @@
       />
 
       <el-dialog title="请首先录入题干程序" v-model="open" width="1000px" append-to-body>
-        <el-form ref='form' :model="form" label-width="20px" :rules="rules">
-          <el-form-item label="" prop="quesType">
+        <el-form ref='form' :model="form" label-width="50px" :rules="rules">
+          <el-form-item label="题型" prop="quesType">
             <el-radio-group v-model="form.quesType" class="ml-4" style="margin-bottom:0px">
                 <el-radio label="1" size="large">阅读程序题</el-radio>
                 <el-radio label="2" size="large">补全程序题</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="" prop="exerciseProgram">
+          <el-form-item label="程序" prop="exerciseProgram">
            <Editor :key="open" v-model="form.exerciseProgram" :height="400"/>
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+           <el-input v-model="form.remark" placeholder="请输入备注" />
           </el-form-item>
           <div slot="footer" class="dialog-footer" style="margin-top:10px">
             <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -116,7 +124,8 @@
           pageNum: 1,
           pageSize: 10,
           exerciseProgram: null,
-          quesType: null
+          quesType: null,
+          remark: null
         },
         // 表单参数
         form: {},

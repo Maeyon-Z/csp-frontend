@@ -1,8 +1,11 @@
 <template>
   <div>
-    <el-form :model="queryParams" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form ref="queryForm" :model="queryParams" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="题目描述" prop="exerciseTitle">
         <el-input v-model="queryParams.exerciseTitle" placeholder="请输入题目描述" />
+      </el-form-item>
+      <el-form-item label="备注" prop="remark">
+        <el-input v-model="queryParams.remark" placeholder="请输入备注" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -26,6 +29,7 @@
       <el-table-column label="选项C" align="center" prop="choiceC" />
       <el-table-column label="选项D" align="center" prop="choiceD" />
       <el-table-column label="正确答案" align="center" prop="correctAnswer" />
+      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)">详情</el-button>
@@ -84,6 +88,9 @@
         <el-form-item label="答案解析" prop="analysis">
           <el-input :disabled="disabled" v-model="form.analysis" placeholder="请输入答案解析" type="textarea" />
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input :disabled="disabled" v-model="form.remark" placeholder="请输入备注" type="textarea" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-show="!disabled">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -93,6 +100,9 @@
 
     <el-dialog title="题目详情" v-model="showInfo" width="1000px" append-to-body>
       <el-form :model="form" label-width="80px">
+        <el-row>
+          <span style="font-size:18px; font-weight:bold; height:40px"> {{ form.remark }} </span>
+        </el-row>
         <!-- <div class="ql-container ql-snow">
           <div class="ql-editor">
             <div v-html="form.exerciseTitle"></div>
@@ -149,6 +159,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         exerciseTitle: null,
+        remark: null,
         exerciseType: null,
         quesType: null,
       },
@@ -208,6 +219,7 @@ export default {
         choiceD: null,
         correctAnswer: null,
         analysis: null,
+        remark: null,
         exerciseType: 0,
         quesType: 0,
       };

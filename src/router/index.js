@@ -144,62 +144,6 @@ export const dynamicRoutes = [
       }
     ]
   },
-  {
-    path: '/tool/gen-edit',
-    component: Layout,
-    hidden: true,
-    permissions: ['tool:gen:edit'],
-    children: [
-      {
-        path: 'index/:tableId(\\d+)',
-        component: () => import('@/views/tool/gen/editTable'),
-        name: 'GenEdit',
-        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
-      }
-    ]
-  },
-  {
-    path: '/dataControl/exercise-edit',
-    component: Layout,
-    hidden: true,
-    permissions: ['dataControl:exercise:edit'],
-    children: [
-      {
-        path: 'edit/:exerciseId(\\d+)',
-        component: () => import('@/views/dataControl/exercise/editExercise'),
-        name: 'ExerciseEdit',
-        meta: { title: '编辑题目', activeMenu: '/dataControl/exercise' }
-      }
-    ]
-  },
-  {
-    path: '/dataControl/exercise-add',
-    component: Layout,
-    hidden: true,
-    permissions: ['dataControl:exercise:add'],
-    children: [
-      {
-        path: 'add',
-        component: () => import('@/views/dataControl/exercise/addExercise'),
-        name: 'ExerciseAdd',
-        meta: { title: '新增题目', activeMenu: '/dataControl/exercise' }
-      }
-    ]
-  },
-  {
-    path: '/dataControl/exercise-info',
-    component: Layout,
-    hidden: true,
-    permissions: ['dataControl:exercise:list'],
-    children: [
-      {
-        path: 'info/:exerciseId(\\d+)',
-        component: () => import('@/views/dataControl/exercise/infoExercise'),
-        name: 'ExerciseInfo',
-        meta: { title: '题目详情', activeMenu: '/dataControl/exercise' }
-      }
-    ]
-  },
 ]
 
 const router = createRouter({
