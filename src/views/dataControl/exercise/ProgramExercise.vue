@@ -71,8 +71,11 @@
         </el-form>
       </el-dialog>
 
-      <el-dialog title="编辑题目" v-model="openEdit" width="1000px" append-to-body>
-        <BaseExercise/>
+      <el-dialog title="编辑题目" v-model="openEdit" width="1020px" append-to-body>
+        <EditProgramExercise :key="exerciseId" :exerciseId="exerciseId" edit="false"/>
+      </el-dialog>
+      <el-dialog title="题目详情" v-model="openInfo" width="1020px" append-to-body>
+        <EditProgramExercise :key="exerciseId" :exerciseId="exerciseId" edit="true"/>
       </el-dialog>
     </div>
   </template>
@@ -84,7 +87,7 @@
   
   <script>
   import { listExercise, getExercise, delExercise, addExercise, updateExercise } from "@/api/dataControl/exercise";
-  import BaseExercise from './BaseExercise.vue';
+  import EditProgramExercise from './EditProgramExercise.vue';
   
   export default {
     name: "ProgramExercise",
@@ -92,6 +95,8 @@
       return {
         open:false,
         openEdit:false,
+        openInfo: false,
+        exerciseId: null,
         // 遮罩层
         loading: true,
         // 选中数组
@@ -191,18 +196,18 @@
       },
       /** 查看题目详情操作 */
       handleInfo(row) {
-        this.openEdit=true;
+        this.exerciseId = row.id;
+        this.openInfo = true;
       },
       /** 新增按钮操作 */
       handleAdd() {
         this.reset();
         this.open = true;
-
-        // this.$router.push('/dataControl/exercise-add/add')
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.$router.push('/dataControl/exercise-edit/edit/' + row.id)
+        this.exerciseId = row.id;
+        this.openEdit = true;
       },
       /** 删除按钮操作 */
       handleDelete(row) {

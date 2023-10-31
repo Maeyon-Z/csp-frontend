@@ -94,13 +94,15 @@
 
 </template>
  
-<script setup lang=ts name="ExerciseAdd">
+<script setup lang=ts name="EditProgramExercise">
 import { addExercise, updateExercise, getQues } from "@/api/dataControl/exercise";
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 
 // 变量
 interface QuesForm {
+   id: long,
+   parentId:long
    exerciseTitle: string
    choiceA: string
    choiceB: string
@@ -110,8 +112,6 @@ interface QuesForm {
    analysis: string
    exerciseType: long
    quesType: long
-   id: long,
-   parentId:long
 }
 const form = reactive<QuesForm>({
    id: -1,
