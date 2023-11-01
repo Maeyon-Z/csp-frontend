@@ -30,7 +30,7 @@
         </el-form-item>
       </el-form>
   
-      <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange" class="my-table">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column type="index" label="序号" align="center" width="50" />
         <el-table-column label="题干程序" align="center" prop="exerciseProgram" />
@@ -239,8 +239,13 @@
   };
 </script>
   
-<style scope>
+<style lang="scss" scoped>
 .el-dialog__body {
    padding-top:1px;
+}
+.my-table{
+  :deep(.cell){
+    max-height:200px;
+  }
 }
 </style>

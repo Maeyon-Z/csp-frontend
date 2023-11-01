@@ -20,7 +20,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange" class="my-table">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column type="index" label="序号" align="center" width="50" />
       <el-table-column label="题目描述" align="center" prop="exerciseTitle" />
@@ -48,7 +48,7 @@
     />
 
     <!-- 添加或修改试卷管理对话框 -->
-    <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
+    <el-dialog :key="form.id" :title="title" v-model="open" width="1000px" append-to-body>
       <el-form ref='form' :model="form" :rules="rules" label-width="80px">
         <el-form-item label="题目描述" prop="exerciseTitle">
           <Editor :key="open" v-model=form.exerciseTitle :height="400" />
@@ -99,27 +99,27 @@
     </el-dialog>
 
     <el-dialog title="题目详情" v-model="showInfo" width="1000px" append-to-body>
-      <el-form :model="form" label-width="80px">
-        <el-row>
-          <span style="font-size:18px; font-weight:bold; height:40px"> {{ form.remark }} </span>
+      <el-form ref='form1' :model="form1" label-width="80px">
+        <el-row v-show="form1.remark!=null && form1.remark != ''">
+          <span style="font-size:18px; font-weight:bold; height:40px"> {{ form1.remark }} </span>
         </el-row>
         <!-- <div class="ql-container ql-snow">
           <div class="ql-editor">
-            <div v-html="form.exerciseTitle"></div>
+            <div v-html="form1.exerciseTitle"></div>
           </div>
         </div> -->
-        <Editor v-model="form.exerciseTitle" :readOnly="true" :height="300"/>
+        <Editor :key="form1.id" v-model="form1.exerciseTitle" :readOnly="true" :height="300"/>
         <el-row :span="24" style="margin-top:20px; margin-bottom:20px">
-            <el-col :span="6"> {{ "A、" + form.choiceA }} </el-col>
-            <el-col :span="6"> {{ "B、" + form.choiceB }} </el-col>
-            <el-col :span="6"> {{ "C、" + form.choiceC }} </el-col>
-            <el-col :span="6"> {{ "D、" + form.choiceD }} </el-col>
+            <el-col :span="6"> {{ "A、" + form1.choiceA }} </el-col>
+            <el-col :span="6"> {{ "B、" + form1.choiceB }} </el-col>
+            <el-col :span="6"> {{ "C、" + form1.choiceC }} </el-col>
+            <el-col :span="6"> {{ "D、" + form1.choiceD }} </el-col>
         </el-row>
         <div style="margin-top:10px">
-          <div style="font-size:15px; font-weight:bold" >答案：{{ form.correctAnswer }}</div>
+          <div style="font-size:15px; font-weight:bold" >答案：{{ form1.correctAnswer }}</div>
         </div>
         <div style="margin-top:10px">
-          <div style="font-size:15px; font-weight:bold" >解析：{{ form.analysis }}</div>
+          <div style="font-size:15px; font-weight:bold" >解析：{{ form1.analysis }}</div>
         </div>
       </el-form>
     </el-dialog>
@@ -165,6 +165,7 @@ export default {
       },
       // 表单参数
       form: {},
+      form1: {},
       // 表单校验
       rules: {
         exerciseTitle: [
@@ -223,7 +224,21 @@ export default {
         exerciseType: 0,
         quesType: 0,
       };
+      this.form1 = {
+        id: null,
+        exerciseTitle: '',
+        choiceA: null,
+        choiceB: null,
+        choiceC: null,
+        choiceD: null,
+        correctAnswer: null,
+        analysis: null,
+        remark: null,
+        exerciseType: 0,
+        quesType: 0,
+      };
       this.resetForm("form");
+      this.resetForm("form1");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -263,7 +278,7 @@ export default {
     /** 查看题目详情操作 */
     handleInfo(row) {
       this.reset();
-      this.form = row;
+      this.form1 = row;
       this.open = false;
       this.showInfo = true;
     },
@@ -272,6 +287,7 @@ export default {
       this.reset();
       this.title="新增题目";
       this.open = true;
+      this.showInfo = false;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -279,6 +295,7 @@ export default {
       this.title="编辑题目";
       this.form = row;
       this.open = true;
+      this.showInfo = false;
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -299,3 +316,11 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.my-table{
+  :deep(.cell){
+    max-height:200px;
+  }
+}
+</style>

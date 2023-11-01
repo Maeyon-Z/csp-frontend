@@ -3,8 +3,8 @@
   <el-form :model="exerciseForm" label-width="80px" ref="exerciseFormRef">
    <el-row :span="24" style="margin-bottom:10px">
     <el-col :span="18">
-        <div v-if="exerciseForm.quesType==1"> <span style="font-weight:bold; font-size:20px"> {{ "阅读程序题-" + exerciseForm.remark }} </span> </div>
-        <div v-else> <span style="font-weight:bold; font-size:20px"> {{ "补全程序题-" + exerciseForm.remark  }} </span> </div>
+        <div v-if="exerciseForm.quesType==1"> <span style="font-weight:bold; font-size:20px"> {{ "阅读程序题 " + exerciseForm.remark }} </span> </div>
+        <div v-else> <span style="font-weight:bold; font-size:20px"> {{ "补全程序题 " + exerciseForm.remark  }} </span> </div>
     </el-col>
     <el-col v-show="props.edit" :span="6">
         <el-button type="primary" icon="Edit" @click="editProgram()" v-hasPermi="['dataControl:exercise:edit']">修改题干</el-button>
@@ -220,6 +220,7 @@
         if(res.code === 200){
             Object.assign(exerciseForm, res.data);
             exerciseForm.quesType = exerciseForm.quesType + '';
+            if(exerciseForm.remark == null) exerciseForm.remark='';
         }
     })
  }
