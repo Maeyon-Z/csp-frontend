@@ -10,13 +10,6 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-        </el-form-item>
-      </el-form>
-  
-      <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
           <el-button
             type="primary"
             plain
@@ -24,47 +17,23 @@
             @click="handleAdd"
             v-hasPermi="['dataControl:paper:add']"
           >新增</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="success"
-            plain
-            icon="Edit"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['dataControl:paper:edit']"
-          >修改</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['csdataControlp:paper:remove']"
-          >删除</el-button>
-        </el-col>
-        <!-- <el-col :span="1.5">
-          <el-button
-            type="warning"
-            plain
-            icon="Download"
-            @click="handleExport"
-            v-hasPermi="['csp:paper:export']"
-          >导出</el-button>
-        </el-col> -->
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
+          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+  
   
       <el-table v-loading="loading" :data="paperList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="主键" align="center" prop="id" />
+        <el-table-column type="index" label="序号" align="center" width="50" />
         <el-table-column label="试卷名称" align="center" prop="paperName" />
+        <el-table-column label="备注" align="center" prop="remark" />
+        <el-table-column label="创建时间" align="center" prop="createTime" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:paper:edit']">修改</el-button>
-               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:paper:edit']">删除</el-button>
+              <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)" v-hasPermi="['dataControl:paper:edit']">详情</el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:paper:edit']">编辑</el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:paper:edit']">删除</el-button>
             </template>
          </el-table-column>
       </el-table>
@@ -72,8 +41,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
   
@@ -82,6 +51,9 @@
         <el-form ref="form" :model="form" :rules="rules" label-width="80px">
           <el-form-item label="试卷名称" prop="paperName">
             <el-input v-model="form.paperName" placeholder="请输入试卷名称" />
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input v-model="form.remark" placeholder="请输入备注信息" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -156,6 +128,7 @@
         this.form = {
           id: null,
           paperName: null,
+          remark:null,
           createBy: null,
           createTime: null,
           updateBy: null,
@@ -181,19 +154,18 @@
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = "添加试卷管理";
+        // this.reset();
+        // this.open = true;
+        this.$router.push('/dataControl/paper-info/add')
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
         this.reset();
-        const id = row.id || this.ids
-        getPaper(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = "修改试卷管理";
-        });
+        this.form = row;
+        this.open = true;
+      },
+      handleInfo(row){
+        this.$router.push('/dataControl/paper-info/show/' + row.id)
       },
       /** 提交按钮 */
       submitForm() {

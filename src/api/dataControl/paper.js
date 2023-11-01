@@ -42,3 +42,18 @@ export function delPaper(id) {
     method: 'delete'
   })
 }
+
+export function genBase(params) {
+  return request({
+    url: '/dataControl/paper/genBase',
+    method: 'post',
+    data: params
+  })
+}
+
+export function getBaseIds() {
+  return request({
+    url: '/dataControl/paper/getBaseIds',
+    method: 'post',
+  })
+}

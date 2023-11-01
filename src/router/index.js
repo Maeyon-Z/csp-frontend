@@ -144,6 +144,48 @@ export const dynamicRoutes = [
       }
     ]
   },
+  {
+    path: '/tool/gen-edit',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:gen:edit'],
+    children: [
+      {
+        path: 'index/:tableId(\\d+)',
+        component: () => import('@/views/tool/gen/editTable'),
+        name: 'GenEdit',
+        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+      }
+    ]
+  },
+  {
+    path: '/dataControl/paper-info',
+    component: Layout,
+    hidden: true,
+    permissions: ['dataControl:paper:edit'],
+    children: [
+      {
+        path: 'add',
+        component: () => import('@/views/dataControl/paper/addPaper'),
+        name: 'AddPaper',
+        meta: { title: '新增试卷', activeMenu: '/dataControl/paper' }
+      }
+    ]
+  },
+  {
+    path: '/dataControl/paper-info',
+    component: Layout,
+    hidden: true,
+    permissions: ['dataControl:paper:edit'],
+    children: [
+      {
+        path: 'show/:paperId(\\d+)',
+        component: () => import('@/views/dataControl/paper/infoPaper'),
+        name: 'InfoPaper',
+        meta: { title: '试卷详情', activeMenu: '/dataControl/paper' }
+      }
+    ]
+  },
 ]
 
 const router = createRouter({

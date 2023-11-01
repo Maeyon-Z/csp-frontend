@@ -21,9 +21,13 @@
     </el-form>
 
     <el-table v-loading="loading" :data="exerciseList" @selection-change="handleSelectionChange" class="my-table">
-      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="selection" width="50" align="center" />
       <el-table-column type="index" label="序号" align="center" width="50" />
-      <el-table-column label="题目描述" align="center" prop="exerciseTitle" />
+      <el-table-column label="题目描述" align="center" prop="exerciseTitle" >
+        <template #default="scope">
+          <div v-html="scope.row.exerciseTitle"></div>
+        </template>
+      </el-table-column>
       <el-table-column label="选项A" align="center" prop="choiceA" />
       <el-table-column label="选项B" align="center" prop="choiceB" />
       <el-table-column label="选项C" align="center" prop="choiceC" />
@@ -317,10 +321,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 .my-table{
   :deep(.cell){
     max-height:200px;
   }
 }
-</style>
+</style> -->
