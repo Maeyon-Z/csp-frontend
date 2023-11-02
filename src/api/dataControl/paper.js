@@ -43,17 +43,17 @@ export function delPaper(id) {
   })
 }
 
-export function genBase(params) {
+export function genExercise(params, type) {
   return request({
-    url: '/dataControl/paper/genBase',
+    url: '/dataControl/paper/genExercise/'+type,
     method: 'post',
     data: params
   })
 }
 
-export function getBaseIds() {
+export function getExerciseIds(type) {
   return request({
-    url: '/dataControl/paper/getBaseIds',
+    url: '/dataControl/paper/getExerciseIds/'+type,
     method: 'post',
   })
 }

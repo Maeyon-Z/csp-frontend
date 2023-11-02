@@ -46,12 +46,12 @@
 
         <el-table-column label="备注" align="center" prop="remark" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-              <template #default="scope">
-                <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)">详情</el-button>
-                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exercise:edit']">编辑</el-button>
-                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:exercise:remove']">删除</el-button>
-              </template>
-           </el-table-column>
+          <template #default="scope">
+            <el-button link type="primary" icon="Search" @click="handleInfo(scope.row)">详情</el-button>
+            <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exercise:edit']">编辑</el-button>
+            <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:exercise:remove']">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <pagination
@@ -193,6 +193,7 @@
           id: null,
           exerciseProgram: '',
           exerciseType: -1,
+          remark:'',
           quesType: '1',
         };
         this.resetForm("form");
