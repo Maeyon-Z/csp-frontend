@@ -152,7 +152,7 @@ const submitGenBaseForm = () => {
                 baseExerciseSumScore.value = 0;
                 if(res.code === 200){
                     baseExerciseList.value = res.data;
-                    baseExerciseSumScore.value += genBaseConfigForm.value.count * genBaseConfigForm.value.score;
+                    baseExerciseSumScore.value += res.data.length * genBaseConfigForm.value.score;
                 }
             })
             showGenBase.value = false;
@@ -194,6 +194,7 @@ const submitChangeScoreForm = () => {
                 }
                 return true;
             })
+            ElMessage.success("修改成功")
             baseExerciseList.value = data;
             showChangeScore.value = false;
             baseLoading.value = false;

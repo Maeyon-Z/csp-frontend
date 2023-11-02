@@ -40,14 +40,14 @@
             <div style="margin-top:10px; margin-bottom:10px"> 
                 <el-row :span="24">
                     <el-col :span="18">
-                        <span v-show="!add"> {{ "分值：" + scoreList[idx] }} </span>
+                        <span v-show="!add"> {{ "分值：" + scoreList[ques.id] }} </span>
                         <div v-show="add">
                             <span> {{ "请输入分值：" }} </span>
                             <el-input-number v-model="ques.score" :min="1" :max="100" /> 
                         </div>
                     </el-col>
                     <el-col :span="6">
-                        <el-button v-show="edit" type="primary" icon="Edit" size="small" @click="handleChangeScore(idx)">修改分值</el-button>
+                        <el-button v-show="edit" type="primary" icon="Edit" size="small" @click="handleChangeScore(ques.id)">修改分值</el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -76,6 +76,7 @@
  const { proxy } = getCurrentInstance();
  const props = defineProps(['exerciseId', 'edit', 'scoreList', 'add'])
  const emits = defineEmits(['scoreChange', 'addExercise'])
+
  interface FormInterface {
    id: long,
    parentId:long
@@ -143,7 +144,7 @@ const saveAddExercise = () => {
     data.score = 0;
     data.scoreList = [];
     quesList.value.forEach(ele => {
-        data.scoreList.push(ele.score);
+        data.scoreList[ele.id] = ele.score;
         data.score += ele.score;
     })
     emits('addExercise', data);

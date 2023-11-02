@@ -30,7 +30,7 @@
         <el-dialog title="随机生成程序题" v-model="showGenExercise" width="500px" append-to-body>
             <el-form ref="genExerciseConfigFormRef" :model="genExerciseConfigForm" :rules="genExerciseConfigFormRules" label-width="80px">
             <el-form-item label="题目数量" prop="count">
-                <el-input-number :min="1" :max="20" style="width:200px" v-model="genExerciseConfigForm.count" placeholder="请输入题目数量" />
+                <el-input-number :min="1" :max="100" style="width:200px" v-model="genExerciseConfigForm.count" placeholder="请输入题目数量" />
             </el-form-item>
             <el-form-item label="题目分值" prop="score">
                 <el-input-number :min="1" :max="100" style="width:200px" v-model="genExerciseConfigForm.score" placeholder="每一问分值" />
@@ -57,7 +57,7 @@
                 </el-col>
                 <el-col :span="18">
                     <div v-if="selectExerciseId != 0">
-                        <ProgramExerciseInfo @addExercise="saveAddExercise" :key="selectExerciseId" :exerciseId="selectExerciseId" :scoreList="[]" :edit="false" :add="true"/>
+                        <ProgramExerciseInfo @addExercise="saveAddExercise" :key="selectExerciseId" :exerciseId="selectExerciseId" :scoreList="{}" :edit="false" :add="true"/>
                     </div>
                 </el-col>
             </el-row>
@@ -133,10 +133,11 @@ const handleChangeExerciseScore = (row) => {
     showEditExerciseInfo.value = true;
 }
 const changeScore = (data) => {
-    console.log(data);
     let score = 0;
-    data.scoreList.forEach(element => {
-        score += element;
+    console.log(data);
+   
+    Object.keys(data.scoreList).forEach(function (key) {
+        score += data.scoreList[key];
     });
     const a = exerciseList.value.find(ele => ele.id == data.id);
     exerciseSumScore.value -= a.score;
@@ -213,9 +214,9 @@ watch(exerciseList, (newValue,oldValue) => {
         exerciseInfos.push(data);
     });
     if(props.type == 1){
-        emits("readProgramExerciseChange", newValue);
+        emits("readProgramExerciseChange", exerciseInfos);
     }else{
-        emits("completeProgramExerciseChange", newValue);
+        emits("completeProgramExerciseChange", exerciseInfos);
     }
 }, {deep:true})
 </script>

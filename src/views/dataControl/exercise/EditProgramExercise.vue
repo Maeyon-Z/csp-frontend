@@ -270,7 +270,7 @@
  const deleteQues = (ques) => {
   ElMessageBox.confirm(
     '删除后不可恢复，是否确定删除?',
-    'Warning',
+    '提示',
     {
       confirmButtonText: '确认',
       cancelButtonText: '取消',

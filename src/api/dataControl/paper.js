@@ -57,3 +57,11 @@ export function getExerciseIds(type) {
     method: 'post',
   })
 }
+
+export function savePaper(params) {
+  return request({
+    url: '/dataControl/paper/save',
+    method: 'post',
+    data: params
+  })
+}
