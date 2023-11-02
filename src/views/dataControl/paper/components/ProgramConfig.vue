@@ -57,7 +57,7 @@
                 </el-col>
                 <el-col :span="18">
                     <div v-if="selectExerciseId != 0">
-                        <ProgramExerciseInfo @addExercise="saveAddExercise" :key="selectExerciseId" :exerciseId="selectExerciseId" :scoreList="{}" :edit="false" :add="true"/>
+                        <ProgramExerciseInfo @addExercise="saveAddExercise" :key="selectExerciseId" :exerciseId="selectExerciseId" :scoreList="[]" :edit="false" :add="true"/>
                     </div>
                 </el-col>
             </el-row>

@@ -71,43 +71,43 @@
 </template>
   
 <script setup lang=ts name="ProgramExerciseInfo">
- import { getExercise, getQues} from "@/api/dataControl/exercise";
- import { ElMessage, ElMessageBox } from 'element-plus'
- const { proxy } = getCurrentInstance();
- const props = defineProps(['exerciseId', 'edit', 'scoreList', 'add'])
- const emits = defineEmits(['scoreChange', 'addExercise'])
+import { getExercise, getQues} from "@/api/dataControl/exercise";
+import { ElMessage, ElMessageBox } from 'element-plus'
+const { proxy } = getCurrentInstance();
+const props = defineProps(['exerciseId', 'edit', 'scoreList', 'add'])
+const emits = defineEmits(['scoreChange', 'addExercise'])
 
- interface FormInterface {
-   id: long,
-   parentId:long
-   exerciseTitle: string
-   exerciseProgram: string
-   choiceA: string
-   choiceB: string
-   choiceC: string
-   choiceD: string
-   correctAnswer: boolean
-   analysis: string
-   exerciseType: string
-   quesType: string
-   remark: string
- }
- const exerciseForm = reactive<FormInterface>({
-   id: -1,
-   parentId:-1,
-   exerciseTitle: '',
-   exerciseProgram: '',
-   choiceA: '',
-   choiceB: '',
-   choiceC: '',
-   choiceD: '',
-   correctAnswer: '',
-   analysis: '',
-   exerciseType: '-1',
-   quesType: '-1',
-   remark: '',
- });
- const data = reactive({
+interface FormInterface {
+id: long,
+parentId:long
+exerciseTitle: string
+exerciseProgram: string
+choiceA: string
+choiceB: string
+choiceC: string
+choiceD: string
+correctAnswer: boolean
+analysis: string
+exerciseType: string
+quesType: string
+remark: string
+}
+const exerciseForm = reactive<FormInterface>({
+id: -1,
+parentId:-1,
+exerciseTitle: '',
+exerciseProgram: '',
+choiceA: '',
+choiceB: '',
+choiceC: '',
+choiceD: '',
+correctAnswer: '',
+analysis: '',
+exerciseType: '-1',
+quesType: '-1',
+remark: '',
+});
+const data = reactive({
     // 修改分数对话框相关参数
     showChangeScore:false, changeScoreForm:{},
     changeScoreFormRules: {
@@ -142,7 +142,7 @@ const submitChangeScoreForm = () => {
 const saveAddExercise = () => {
     const data = exerciseForm;
     data.score = 0;
-    data.scoreList = [];
+    data.scoreList = {};
     quesList.value.forEach(ele => {
         data.scoreList[ele.id] = ele.score;
         data.score += ele.score;
@@ -156,13 +156,13 @@ getExerciseQues(props.exerciseId);
 loading.value = false;
 })
 const getExerciseById = (id) => {
-getExercise(id).then(res => {
-    if(res.code === 200){
-        Object.assign(exerciseForm, res.data);
-        exerciseForm.quesType = exerciseForm.quesType + '';
-        if(exerciseForm.remark == null) exerciseForm.remark='';
-    }
-})
+    getExercise(id).then(res => {
+        if(res.code === 200){
+            Object.assign(exerciseForm, res.data);
+            exerciseForm.quesType = exerciseForm.quesType + '';
+            if(exerciseForm.remark == null) exerciseForm.remark='';
+        }
+    })
 }
 const getExerciseQues = (parentId) => {
 quesList.value = [];
