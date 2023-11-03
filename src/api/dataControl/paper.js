@@ -65,9 +65,17 @@ export function savePaper(params) {
     data: params
   })
 }
+
 export function getPaperExercise(paperId, type) {
   return request({
     url: '/dataControl/paper/getPaperExercise/' + paperId + "/" + type,
+    method: 'get'
+  })
+}
+
+export function getPaperListForExam() {
+  return request({
+    url: '/dataControl/paper/getPaperListForExam',
     method: 'get'
   })
 }
