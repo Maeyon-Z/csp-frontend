@@ -57,6 +57,16 @@
             </div>
           </template>
           <el-collapse accordion>
+            <el-collapse-item title="v0.0.3 - 2023-11-03">
+              <ol>
+                <li>考试管理功能完成，支持管理员发布考试、指定考试参与人员</li>
+              </ol>
+            </el-collapse-item>
+            <el-collapse-item title="v0.0.2 - 2023-11-02">
+              <ol>
+                <li>试卷管理功能完成，支持按照CSP试题格式生成试卷，支持根据生成规则随机生成以及手动配置生成</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v0.0.1 - 2023-10-31">
               <ol>
                 <li>试题管理功能完成，支持基础、阅读程序、补全程序等三类题目的录入</li>
