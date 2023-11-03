@@ -304,6 +304,7 @@
     proxy.$refs["quesFormRef"].validate(valid => {
       if (valid) {
         quesForm.value.parentId = props.exerciseId;
+        quesForm.value.quesType = exerciseForm.quesType;
          if(quesForm.value.id != -1){
             updateExercise(quesForm.value).then(response => {
                if(response.code == 200){

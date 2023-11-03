@@ -43,6 +43,8 @@
 </template>
 
 <script setup lang=ts name="BaseInfo">
+import { getPaperExercise } from '@/api/dataControl/paper';
+
 const props = defineProps(['paperId']);
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -54,8 +56,18 @@ const data = reactive({
 const { baseInfoForm, showBaseInfo, baseLoading, baseExerciseList } = toRefs(data);
 
 onMounted(() => {
-    
+    getExercise();
 })
+
+const getExercise = () => {
+    baseLoading.value = true;
+    getPaperExercise(props.paperId, 0).then(res => {
+        if(res.code == 200){
+            baseExerciseList.value = res.data;
+        }
+    })
+    baseLoading.value = false;
+}
 
 const baseInfo = (row) => {
     reset();

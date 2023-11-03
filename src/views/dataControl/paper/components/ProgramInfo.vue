@@ -21,9 +21,8 @@
             </el-table-column>
         </el-table>
     
-        
         <el-dialog title="题目详情" v-model="showExerciseInfo" width="1000px" append-to-body>
-            <ProgramExerciseInfo :key="showExerciseInfo" :exerciseId="showExerciseId" :scoreList="showExerciseScoreList" :edit="false" :add="false"/>
+            <ProgramExerciseInfo :key="showExerciseId" :exerciseId="showExerciseId" :scoreList="showExerciseScoreList" :edit="false" :add="false"/>
         </el-dialog>
         
     </div>
@@ -31,9 +30,10 @@
     
 <script setup lang=ts name="ProgramInfo">
 import ProgramExerciseInfo from './ProgramExerciseInfo.vue'
+import { getPaperExercise } from '@/api/dataControl/paper';
 const { proxy } = getCurrentInstance();
 const { sys_exercise_cate } = proxy.useDict("sys_exercise_cate");
-const props = defineProps(['type'])
+const props = defineProps(['type', 'paperId'])
 const data = reactive({
     // 题目列表相关参数
     exerciseLoading: false, exerciseList: [], 
@@ -44,6 +44,20 @@ const {
     exerciseLoading, exerciseList, 
     showExerciseInfo, showExerciseId, showExerciseScoreList,
 } = toRefs(data);
+
+onMounted(() => {
+    getExercise();
+})
+
+const getExercise = () => {
+    exerciseLoading.value = true;
+    getPaperExercise(props.paperId, props.type).then(res => {
+        if(res.code == 200){
+            exerciseList.value = res.data;
+        }
+    })
+    exerciseLoading.value = false;
+}
 
 
 // 查看题目详情

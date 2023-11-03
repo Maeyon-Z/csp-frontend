@@ -14,10 +14,10 @@
                     <BaseInfo :paperId="paperId" />
                 </el-tab-pane>
                 <el-tab-pane label="阅读程序题">
-                    <ProgramInfo :type="1" :paperId="paperId"/>
+                    <ProgramInfo :type='1' :paperId="paperId"/>
                 </el-tab-pane>
                 <el-tab-pane label="补全程序题">
-                    <ProgramInfo :type="2" :paperId="paperId"/>
+                    <ProgramInfo :type='2' :paperId="paperId"/>
                 </el-tab-pane>
             </el-tabs>
         </el-card>
