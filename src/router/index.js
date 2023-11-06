@@ -186,6 +186,20 @@ export const dynamicRoutes = [
       }
     ]
   },
+  {
+    path: '/stu/exam-info',
+    component: Layout,
+    hidden: true,
+    permissions: ['stu:exam:list'],
+    children: [
+      {
+        path: 'exam/:stuExamId(\\d+)/:paperId(\\d+)',
+        component: () => import('@/views/stu/exam/exam'),
+        name: 'Exam',
+        meta: { title: '考试中', activeMenu: '/stu/exam' }
+      }
+    ]
+  },
 ]
 
 const router = createRouter({

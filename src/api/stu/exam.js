@@ -17,9 +17,17 @@ export function getAllUser() {
   })
 }
 
-export function startExam(userId, examId) {
+export function startExam(data) {
   return request({
-    url: '/stu/exam/startExam/' + userId + "/" + examId,
+    url: '/stu/exam/startExam',
+    method: 'post',
+    data: data
+  })
+}
+
+export function getStuExamById(id) {
+  return request({
+    url: '/stu/exam/getStuExamById/' + id,
     method: 'get'
   })
 }

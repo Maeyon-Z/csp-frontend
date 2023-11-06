@@ -32,11 +32,13 @@
                     <dict-tag :options="exam_status" :value="scope.row.status"/>
                   </template>
                 </el-table-column>
-                <el-table-column label="创建时间" align="center" prop="createTime" width="180"/>
+                <el-table-column label="考试发布时间" align="center" prop="createTime" width="180"/>
+                <el-table-column label="开始时间" align="center" prop="startTime" width="180"/>
+                <el-table-column label="结束时间" align="center" prop="endTime" width="180"/>
                 <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                   <template #default="scope">
                     <el-button v-show="scope.row.status === 0" link type="primary" @click="handleStartExam(scope.row)">开始考试</el-button>
-                    <el-button v-show="scope.row.status === 0" link type="primary" @click="handleBackExam(scope.row)">回到考试</el-button>
+                    <el-button v-show="scope.row.status === 1" link type="primary" @click="handleBackExam(scope.row)">回到考试</el-button>
                     <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleReviewExam(scope.row)">考试回顾</el-button>
                     <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleShowRank(scope.row)">成绩排名</el-button>
                   </template>
@@ -56,6 +58,9 @@
   <script setup name="Exam">
     import { listExam, getAllUser, startExam } from "@/api/stu/exam";
     import { getPaperListForExam } from "@/api/stu/paper";
+    import { useRouter } from 'vue-router';
+
+    const router = useRouter();
     const { proxy } = getCurrentInstance();
     const { exam_status } = proxy.useDict("exam_status");
     const examList = ref([]);
@@ -81,15 +86,16 @@
     
     const handleStartExam = (row) => {
       proxy.$modal.confirm('考试时长' + row.duration + '分钟，是否开始考试?').then(function() {
-        return startExam(row.userId, row.examId);
+        return startExam(row);
       }).then(() => {
         getList();
         proxy.$modal.msgSuccess("开始成功");
+        router.push('/stu/exam-info/exam/' + row.id + '/' + row.paperId)
       }).catch(() => {});
     }
 
     const handleBackExam = (row) => {
-      
+      router.push('/stu/exam-info/exam/' + row.id + '/' + row.paperId)
     }
 
     const handleReviewExam = (row) => {
