@@ -35,6 +35,7 @@
                 <el-table-column label="考试发布时间" align="center" prop="createTime" width="180"/>
                 <el-table-column label="开始时间" align="center" prop="startTime" width="180"/>
                 <el-table-column label="结束时间" align="center" prop="endTime" width="180"/>
+                <el-table-column label="分数" align="center" prop="score" width="180"/>
                 <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                   <template #default="scope">
                     <el-button v-show="scope.row.status === 0" link type="primary" @click="handleStartExam(scope.row)">开始考试</el-button>

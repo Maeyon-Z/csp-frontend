@@ -1,70 +1,64 @@
 <template>
     <div>
-        <el-table v-loading="exerciseLoading" :data="exerciseList">
-            <el-table-column type="index" label="序号" align="center" width="50" />
-            <el-table-column label="题干程序" align="center" prop="exerciseProgram" >
-                <template #default="scope">
-                    <div v-html="scope.row.exerciseProgram"></div>
-                </template>
-            </el-table-column>
-            <el-table-column label="类型" align="center" prop="quesType">
-            <template #default="scope">
-                <dict-tag :options="sys_exercise_cate" :value="scope.row.quesType"/>
-            </template>
-            </el-table-column>
-            <el-table-column label="备注" align="center" prop="remark" />
-            <el-table-column label="分值" align="center" prop="score" />
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-                <template #default="scope">
-                    <el-button link type="primary" icon="Search" @click="exerciseInfo(scope.row)">详情</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-    
-        <el-dialog title="题目详情" v-model="showExerciseInfo" width="1000px" append-to-body>
-            <ProgramExerciseInfo :key="showExerciseId" :exerciseId="showExerciseId" :scoreList="showExerciseScoreList" :edit="false" :add="false"/>
-        </el-dialog>
-        
+        <el-tabs tab-position="left" class="demo-tabs">
+            <el-tab-pane v-for="(item, idx) in exerciseList" :label="'第'+(idx+1)+'题'">
+                <div style="margin:20px">
+                    <el-row :span="24" style="margin-top:20px; margin-bottom:20px; font-size:30px">
+                        {{ "第" + (idx+1) + "题（ " +  item.score + " 分）"}}
+                    </el-row>
+                    <div style="font-size:20px" v-html="item.exerciseProgram"> </div>
+                    <div v-for="(ques, id) in item.quesList" style="font-size:20px">
+                        <div style="font-size:20px" v-html="ques.exerciseTitle"> </div>
+                        <el-radio-group v-model="ques.answer" v-show="ques.exerciseType == 0" class="ml-4" style="font-size:20px">
+                            <el-radio label="A" size="large">{{ "A、" + ques.choiceA }}</el-radio>
+                            <el-radio label="B" size="large">{{ "B、" + ques.choiceB }}</el-radio>
+                            <el-radio label="C" size="large">{{ "C、" + ques.choiceC }}</el-radio>
+                            <el-radio label="D" size="large">{{ "D、" + ques.choiceD }}</el-radio>
+                        </el-radio-group>
+                        <el-radio-group v-model="ques.answer" v-show="ques.exerciseType == 1" class="ml-4" style="font-size:20px">
+                            <el-radio label="正确" size="large">{{ "正确" }}</el-radio>
+                            <el-radio label="错误" size="large">{{ "错误" }}</el-radio>
+                        </el-radio-group>
+                    </div>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
     
 <script setup lang=ts name="ProgramInfo">
-import ProgramExerciseInfo from './ProgramExerciseInfo.vue'
+import { getQues } from "@/api/stu/exercise";
 import { getPaperExercise } from '@/api/stu/paper';
-const { proxy } = getCurrentInstance();
-const { sys_exercise_cate } = proxy.useDict("sys_exercise_cate");
+
 const props = defineProps(['type', 'paperId'])
 const data = reactive({
-    // 题目列表相关参数
-    exerciseLoading: false, exerciseList: [], 
-    // 题目详情对话框相关参数
-    showExerciseInfo: false, showExerciseId: 0, showExerciseScoreList:[],
+    exerciseList: [], exerciseAnswer: {}
 });
 const {
-    exerciseLoading, exerciseList, 
-    showExerciseInfo, showExerciseId, showExerciseScoreList,
+    exerciseList, exerciseAnswer
 } = toRefs(data);
 
-onMounted(() => {
-    getExercise();
-})
-
-const getExercise = () => {
-    exerciseLoading.value = true;
-    getPaperExercise(props.paperId, props.type).then(res => {
+onMounted(async () => {
+    await getPaperExercise(props.paperId, props.type).then(res => {
         if(res.code == 200){
             exerciseList.value = res.data;
         }
     })
-    exerciseLoading.value = false;
-}
+    await exerciseList.value.forEach(exercise => {   
+        exercise.quesList = []
+        getQues(exercise.id).then(res => {
+            if(res.code === 200){
+                res.data.forEach(ques => {
+                    ques.score = exercise.scoreList[ques.id];
+                    ques.answer = null;
+                })
+                exercise.quesList = res.data;
+            }
+        })
+    })
+})
 
-
-// 查看题目详情
-const exerciseInfo = (row) => {
-    showExerciseId.value = row.id;
-    showExerciseScoreList.value = row.scoreList;
-    showExerciseInfo.value = true;
-}
-
+defineExpose({
+    exerciseList
+});
 </script>

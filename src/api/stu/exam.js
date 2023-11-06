@@ -31,3 +31,11 @@ export function getStuExamById(id) {
     method: 'get'
   })
 }
+
+export function submitExam(data) {
+  return request({
+    url: '/stu/exam/submitExam',
+    method: 'post',
+    data: data
+  })
+}
