@@ -15,7 +15,7 @@
             <el-col :span="6"> <span style="font-size:15px">{{ "考试时长：" + stuExamInfo.duration + "分钟" }} </span> </el-col>
             <el-col :span="8"> <span style="font-size:15px">{{ "开始时间：" + stuExamInfo.startTime }} </span> </el-col>
             <el-col :span="6"> <span style="font-size:15px">{{ "结束时间：" + stuExamInfo.endTime }} </span> </el-col>
-            <el-col :span="4"> <el-button type="primary" @click="handleSubmit">交 卷</el-button> </el-col>
+            <el-col :span="4"> <el-button v-show="remainder > 0" type="primary" @click="handleSubmit">交 卷</el-button> </el-col>
         </el-row> 
         <el-divider />
         <el-tabs type="border-card">
@@ -40,15 +40,17 @@ import { useRoute } from "vue-router"
 import { ElMessage, ElMessageBox } from 'element-plus'
 import BaseInfo from './components/BaseInfo.vue';
 import ProgramInfo from './components/ProgramInfo.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const route = useRoute();
 const stuExamId = route.params.stuExamId;
 const paperId = route.params.paperId;
 const data = reactive({
-    stuExamInfo: {}, paperInfo: {}, remainder: 0, baseRef: null, readProgramRef: null, completeProgramRef: null, isEnd: false
+    stuExamInfo: {}, paperInfo: {}, remainder: null, baseRef: null, readProgramRef: null, completeProgramRef: null
 });
 const { 
-    stuExamInfo, paperInfo, remainder, baseRef, readProgramRef, completeProgramRef, isEnd
+    stuExamInfo, paperInfo, remainder, baseRef, readProgramRef, completeProgramRef
 } = toRefs(data);
 
 onMounted(async () => {
@@ -63,7 +65,6 @@ onMounted(async () => {
         }
     })
     remainder.value = Date.parse(new Date(stuExamInfo.value.endTime))/1000 - Date.parse(new Date())/1000;
-    if(remainder.value < 0) isEnd.value = true;
     let timer = null;
     timer = setInterval(() => {
         remainder.value--;
@@ -75,27 +76,24 @@ onBeforeUnmount(() => {
   timer = null;
 })
 
-watch(remainder, (oldValue, newValue) => {
+const unwatch = watch(remainder, (oldValue, newValue) => {
     if(newValue < 0){
-        isEnd.value = true;
-    }
-})
-
-watch(isEnd, (oldValue, newValue) => {
-    if(newValue){
-        ElMessage.warning("考试结束，自动交卷！");
-        submitForm();
+        autoSubmit();
     }
 })
 
 const handleSubmit = () => {
     ElMessageBox.confirm('是否确认交卷?', '提示', { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' } ).then(() => {
         submitForm();
-        ElMessage.success("提交成功")
     })
     .catch(() => {
         ElMessage.info("取消交卷")
     })
+}
+
+const autoSubmit = () => {
+    ElMessage.warning("时间结束，自动交卷！");
+    submitForm();
 }
 
 const submitForm = () => {
@@ -114,7 +112,10 @@ const submitForm = () => {
     })
 
     submitExam({answer: answer, userId: stuExamInfo.value.userId, examId: stuExamInfo.value.examId}).then(res => {
-        console.log(123213);
+        ElMessage.success("提交成功");
+        unwatch()
+        router.push('/stu/exam')
+        // todo 自动关闭页面
     })
 }
 

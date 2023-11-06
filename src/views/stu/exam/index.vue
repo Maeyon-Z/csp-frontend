@@ -40,7 +40,7 @@
                   <template #default="scope">
                     <el-button v-show="scope.row.status === 0" link type="primary" @click="handleStartExam(scope.row)">开始考试</el-button>
                     <el-button v-show="scope.row.status === 1" link type="primary" @click="handleBackExam(scope.row)">回到考试</el-button>
-                    <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleReviewExam(scope.row)">考试回顾</el-button>
+                    <!-- <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleReviewExam(scope.row)">考试回顾</el-button> -->
                     <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleShowRank(scope.row)">成绩排名</el-button>
                   </template>
                 </el-table-column>
@@ -53,11 +53,28 @@
           v-model:limit="queryParams.pageSize"
           @pagination="getList"
       />
+
+      <el-dialog title="成绩排名" v-model="showRank" width="1020px" append-to-body>
+        <el-table v-loading="loadingRank" :data="rankList">
+            <el-table-column type="index" label="排名" align="center" width="50" />
+            <el-table-column label="分数" align="center" prop="score" />
+            <el-table-column label="姓名" align="center" prop="userId" >
+              <template #default="scope">
+                  {{ getUserNameById(scope.row.userId) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="考试状态" align="center" prop="status" >
+              <template #default="scope">
+                <dict-tag :options="exam_status" :value="scope.row.status"/>
+              </template>
+            </el-table-column>
+        </el-table>
+      </el-dialog>
     </div>
   </template>
   
   <script setup name="Exam">
-    import { listExam, getAllUser, startExam } from "@/api/stu/exam";
+    import { listExam, getAllUser, startExam, getRank } from "@/api/stu/exam";
     import { getPaperListForExam } from "@/api/stu/paper";
     import { useRouter } from 'vue-router';
 
@@ -80,17 +97,18 @@
         examName: null,
       },
       paperList:[],
-      userList:[]
+      userList:[],
+      showRank: false, loadingRank: false, rankList:[]
     });
   
-    const { queryParams, paperList, userList } = toRefs(data);
+    const { queryParams, paperList, userList, showRank, loadingRank, rankList } = toRefs(data);
     
     const handleStartExam = (row) => {
       proxy.$modal.confirm('考试时长' + row.duration + '分钟，是否开始考试?').then(function() {
         return startExam(row);
       }).then(() => {
         getList();
-        proxy.$modal.msgSuccess("开始成功");
+        proxy.$modal.msgSuccess("成功开始考试");
         router.push('/stu/exam-info/exam/' + row.id + '/' + row.paperId)
       }).catch(() => {});
     }
@@ -104,7 +122,14 @@
     }
 
     const handleShowRank = (row) => {
-
+      loadingRank.value = true;
+      getRank(row.examId).then(res => {
+        if(res.code === 200){
+          rankList.value = res.data;
+        }
+      })
+      showRank.value = true;
+      loadingRank.value = false;
     }
 
     onMounted(() => {

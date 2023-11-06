@@ -39,3 +39,10 @@ export function submitExam(data) {
     data: data
   })
 }
+
+export function getRank(examId) {
+  return request({
+    url: '/stu/exam/getRank/' + examId,
+    method: 'get'
+  })
+}
