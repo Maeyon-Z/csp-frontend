@@ -27,13 +27,16 @@
                     {{ "第" + (idx+1) + "题"}}
                 </el-row>
                 <div style="font-size:20px" v-html="item.exerciseTitle"> </div>
-                <el-radio-group v-model="item.answer" class="ml-4" style="font-size:20px">
+                <el-radio-group :disabled="item.showAnswer" v-model="item.answer" class="ml-4" style="font-size:20px">
                     <el-radio label="A" size="large">{{ "A、" + item.choiceA }}</el-radio>
                     <el-radio label="B" size="large">{{ "B、" + item.choiceB }}</el-radio>
                     <el-radio label="C" size="large">{{ "C、" + item.choiceC }}</el-radio>
                     <el-radio label="D" size="large">{{ "D、" + item.choiceD }}</el-radio>
                 </el-radio-group>
                 <div v-show="item.showAnswer" style="color:red">
+                    <el-row :span="24" style="margin-top:20px; margin-bottom:20px; font-size:15px">
+                        你的答案：{{ item.answer == undefined ? " " :  item.answer}}
+                    </el-row>
                     <el-row :span="24" style="margin-top:20px; margin-bottom:20px; font-size:15px">
                         {{"正确答案：" + item.correctAnswer }}
                     </el-row>
@@ -49,17 +52,20 @@
                 <div style="font-size:20px" v-html="item.exerciseProgram"> </div>
                 <div v-for="(ques, id) in item.quesList" style="font-size:20px">
                     <div style="font-size:20px" v-html="ques.exerciseTitle"> </div>
-                    <el-radio-group v-model="ques.answer" v-show="ques.exerciseType == 0" class="ml-4" style="font-size:20px">
+                    <el-radio-group :disabled="item.showAnswer" v-model="ques.answer" v-show="ques.exerciseType == 0" class="ml-4" style="font-size:20px">
                         <el-radio label="A" size="large">{{ "A、" + ques.choiceA }}</el-radio>
                         <el-radio label="B" size="large">{{ "B、" + ques.choiceB }}</el-radio>
                         <el-radio label="C" size="large">{{ "C、" + ques.choiceC }}</el-radio>
                         <el-radio label="D" size="large">{{ "D、" + ques.choiceD }}</el-radio>
                     </el-radio-group>
-                    <el-radio-group v-model="ques.answer" v-show="ques.exerciseType == 1" class="ml-4" style="font-size:20px">
+                    <el-radio-group :disabled="item.showAnswer" v-model="ques.answer" v-show="ques.exerciseType == 1" class="ml-4" style="font-size:20px">
                         <el-radio label="正确" size="large">{{ "正确" }}</el-radio>
                         <el-radio label="错误" size="large">{{ "错误" }}</el-radio>
                     </el-radio-group>
                     <div v-show="item.showAnswer" style="color:red">
+                        <el-row :span="24" style="margin-top:10px; margin-bottom:10px; font-size:15px">
+                            你的答案：{{ ques.answer == undefined ? " " :  ques.answer}}
+                        </el-row>
                         <el-row :span="24" style="margin-top:10px; margin-bottom:10px; font-size:15px">
                             {{"正确答案：" + ques.correctAnswer }}
                         </el-row>
@@ -69,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <el-button type="primary" @click="submit(item)">提交并查看答案解析</el-button>
+            <el-button type="primary" v-show="!item.showAnswer" @click="submit(item)">提交并查看答案解析</el-button>
         </el-tab-pane>
       </el-tabs>
 
@@ -77,7 +83,7 @@
 </template>
 
 <script setup name="Practice">
-import { genExercise } from '@/api/stu/practice'
+import { genExercise, submitPractice } from '@/api/stu/practice'
 import { getQues } from "@/api/stu/exercise";
 const { proxy } = getCurrentInstance();
 
@@ -97,6 +103,20 @@ const { queryParams, queryRules, exerciseList} = toRefs(data);
 
 const submit = (item) => {
     item.showAnswer = true;
+    if(item.quesType == 0 && item.answer != item.correctAnswer){
+        submitPractice(item.id);
+    }
+    if(item.quesType != 0){
+        let flag = false;
+        item.quesList.forEach(ques => {
+            if(ques.answer != ques.correctAnswer){
+                flag = true;
+            }
+        })
+        if(flag){
+            submitPractice(item.id);
+        }
+    }
 }
 
 const typeOptions = [
