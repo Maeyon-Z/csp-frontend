@@ -42,6 +42,7 @@
                     <el-button v-show="scope.row.status === 1" link type="primary" @click="handleBackExam(scope.row)">回到考试</el-button>
                     <!-- <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleReviewExam(scope.row)">考试回顾</el-button> -->
                     <el-button v-show="scope.row.status === 2" link type="primary" icon="Search" @click="handleShowRank(scope.row)">成绩排名</el-button>
+                    <el-button v-show="scope.row.status === 2" link type="primary" icon="Refresh" @click="handleStartExam(scope.row)">重新考试</el-button>
                   </template>
                 </el-table-column>
       </el-table>
