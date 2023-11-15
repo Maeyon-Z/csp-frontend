@@ -35,7 +35,6 @@ export function updateExam(data) {
   })
 }
 
-// 删除考试管理
 export function delExam(id) {
   return request({
     url: '/dataControl/exam/' + id,
@@ -43,10 +42,16 @@ export function delExam(id) {
   })
 }
 
-// 删除考试管理
 export function getAllUser(id) {
   return request({
     url: '/dataControl/exam/getAllUser',
+    method: 'get'
+  })
+}
+
+export function getAllDept(id) {
+  return request({
+    url: '/dataControl/exam/getAllDept',
     method: 'get'
   })
 }

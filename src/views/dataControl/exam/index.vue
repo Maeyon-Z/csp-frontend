@@ -31,7 +31,7 @@
               <el-table-column label="创建时间" align="center" prop="createTime" width="180"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <!-- <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exam:edit']">修改</el-button> -->
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['dataControl:exam:edit']">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['dataControl:exam:remove']">删除</el-button>
         </template>
       </el-table-column>
@@ -46,13 +46,13 @@
     />
 
     <!-- 添加或修改考试管理对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog :title="title" v-model="open" width="500px" append-to-body :key="open">
       <el-form ref="examRef" :model="form" :rules="rules" label-width="80px">
           <el-form-item label="考试名称" prop="examName">
             <el-input v-model="form.examName" placeholder="请输入考试名称" />
           </el-form-item> 
           <el-form-item label="考试试卷" prop="paperId">
-            <el-select style="width:400px" v-model="form.paperId" filterable placeholder="请选择试卷">
+            <el-select style="width:400px" v-model="form.paperId" filterable placeholder="请选择试卷" :disabled="flag">
               <el-option
                 v-for="item in paperList"
                 :key="item.id"
@@ -62,17 +62,18 @@
             </el-select>
           </el-form-item>
           <el-form-item label="参与用户" prop="users">
-            <el-select style="width:400px" v-model="form.users" filterable multiple placeholder="请选择参与用户">
+            <!-- <el-select style="width:400px" v-model="form.users" filterable multiple placeholder="请选择参与用户">
               <el-option
                 v-for="item in userList"
                 :key="item.userId"
                 :label="item.nickName"
                 :value="item.userId"
               />
-            </el-select>
+            </el-select> -->
+            <el-cascader :options="userOptions" :props="props" v-model="form.chooseUsers" @change="chooseUsers"/>
           </el-form-item>
           <el-form-item label="持续时间" prop="duration">
-            <el-input-number style="width:200px" :min="1" :max="300" v-model="form.duration" placeholder="请输入持续时间" />
+            <el-input-number style="width:200px" :precision="0" :min="1" :max="300" v-model="form.duration" placeholder="以分钟为单位" />
           </el-form-item>
       </el-form>
       <template #footer>
@@ -86,7 +87,7 @@
 </template>
 
 <script setup name="Exam">
-  import { listExam, getExam, delExam, addExam, updateExam, getAllUser } from "@/api/dataControl/exam";
+  import { listExam, getExam, delExam, addExam, updateExam, getAllUser, getAllDept } from "@/api/dataControl/exam";
   import { getPaperListForExam } from "@/api/dataControl/paper";
 
   const { proxy } = getCurrentInstance();
@@ -126,29 +127,55 @@
         ],
     },
     paperList:[],
-    userList:[]
+    userList:[],
+    deptList:[],
+    userOptions:[],
+    props: {multiple: true,},
+    flag: false
   });
 
-  const { queryParams, form, rules, paperList, userList } = toRefs(data);
+  const { queryParams, form, rules, paperList, userList, deptList, userOptions, props, flag } = toRefs(data);
 
   onMounted(() => {
     getPaperList();
     getList();
-    getUserList();
+    buildUserOptions();
   })
+
+  const chooseUsers =(...args) => {
+    form.value.users = [];
+    args[0].forEach(arg => {
+      if(arg[1] !== undefined) form.value.users.push(arg[1])
+    })
+  }
+
+  const buildUserOptions = async () => {
+    await getAllUser().then(res => {
+      if(res.code === 200){
+        userList.value = res.data;
+      }
+    })
+    await getAllDept().then(res => {
+      if(res.code === 200){
+        deptList.value = res.data;
+      }
+    })
+    deptList.value.forEach(dept => {
+      let users = userList.value.filter(user => {
+        return user.deptId == dept.deptId;
+      })
+      let children = [];
+      users.forEach(user => {
+        children.push({value: user.userId, label: user.nickName})
+      })
+      userOptions.value.push({value: dept.deptName, label: dept.deptName, children: children})
+    })
+  }
 
   const getPaperList = () =>{
     getPaperListForExam().then(res => {
       if(res.code === 200){
         paperList.value = res.data;
-      }
-    })
-  }
-
-  const getUserList = () =>{
-    getAllUser().then(res => {
-      if(res.code === 200){
-        userList.value = res.data;
       }
     })
   }
@@ -191,7 +218,8 @@
       createTime: null,
       updateBy: null,
       updateTime: null,
-      users: []
+      users: [],
+      chooseUsers:[]
     };
     proxy.resetForm("examRef");
   }
@@ -219,18 +247,18 @@
   function handleAdd() {
     reset();
     open.value = true;
+    flag.value = false;
     title.value = "添加考试";
   }
 
   /** 修改按钮操作 */
   function handleUpdate(row) {
     reset();
-    const _id = row.id || ids.value
-    getExam(_id).then(response => {
-      form.value = response.data;
-      open.value = true;
-      title.value = "修改考试";
-    });
+    row.chooseUsers = row.users;
+    form.value = row;
+    open.value = true;
+    flag.value = true;
+    title.value = "修改考试";
   }
 
   /** 提交按钮 */
