@@ -41,7 +41,7 @@
                         {{"正确答案：" + item.correctAnswer }}
                     </el-row>
                     <el-row :span="24" style="margin-top:20px; margin-bottom:20px; font-size:15px">
-                        {{ item.analysis }}
+                        {{"解析：" + item.analysis }}
                     </el-row>
                 </div>
             </div>
