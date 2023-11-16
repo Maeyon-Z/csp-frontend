@@ -70,7 +70,7 @@
                             {{"正确答案：" + ques.correctAnswer }}
                         </el-row>
                         <el-row :span="24" style="margin-top:10px; margin-bottom:10px; font-size:15px">
-                            {{ ques.analysis }}
+                            {{"解析：" + ques.analysis }}
                         </el-row>
                     </div>
                 </div>
