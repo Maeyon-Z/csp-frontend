@@ -88,7 +88,7 @@ import { getQues } from "@/api/stu/exercise";
 const { proxy } = getCurrentInstance();
 
 const data = reactive({ 
-    queryParams: {count: null,type: '-1'} ,
+    queryParams: {count: 20,type: '0'} ,
     queryRules:{
         count: [
             { required: true, message: "请输入题目数量", trigger: "blur" }
